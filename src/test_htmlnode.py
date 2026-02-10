@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_eq(self):
@@ -47,3 +47,53 @@ class TestHTMLNode(unittest.TestCase):
         node = LeafNode("p", None)
         with self.assertRaises(ValueError):
          node.to_html()
+
+    def test_to_html_with_children(self):
+        child_node = LeafNode("span", "child")
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(parent_node.to_html(), "<div><span>child</span></div>")
+
+    def test_to_html_with_grandchildren(self):
+        grandchild_node = LeafNode("b", "grandchild")
+        child_node = ParentNode("span", [grandchild_node])
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(
+            parent_node.to_html(),
+            "<div><span><b>grandchild</b></span></div>",
+        )
+
+    def test_parent_with_multiple_leaf_children(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold"),
+                LeafNode(None, " text "),
+                LeafNode("i", "italic"),
+            ],
+        )
+        self.assertEqual(node.to_html(), "<p><b>Bold</b> text <i>italic</i></p>")
+
+    def test_parent_with_props(self):
+        child = LeafNode("span", "child")
+        parent = ParentNode("div", [child], {"class": "container"})
+        self.assertEqual(
+            parent.to_html(),
+            '<div class="container"><span>child</span></div>',
+        )
+
+    def test_deeply_nested_parents(self):
+        inner = ParentNode("span", [LeafNode("b", "deep")])
+        middle = ParentNode("div", [inner])
+        outer = ParentNode("section", [middle])
+        self.assertEqual(
+            outer.to_html(),
+            "<section><div><span><b>deep</b></span></div></section>",
+        )
+
+    def test_parent_raises_without_tag(self):
+        with self.assertRaises(ValueError):
+            ParentNode(None, [LeafNode("span", "x")]).to_html()
+    
+    def test_parent_raises_without_children(self):
+        with self.assertRaises(ValueError):
+            ParentNode("div", None).to_html()
