@@ -1,6 +1,7 @@
 from textnode import TextNode, TextType
 from htmlnode import LeafNode
 
+
 def text_node_to_html_node(text_node):
     if not isinstance(text_node, TextNode):
         raise ValueError ("not a TextNode")
@@ -18,3 +19,4 @@ def text_node_to_html_node(text_node):
         return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
     else:
         raise ValueError("unrecognized type")
+    
