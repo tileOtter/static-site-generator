@@ -36,7 +36,17 @@ the **same** even with inline stuff
         )
 
     def test_blockquote(self):
-        pass
+        md = """
+> This is a block,
+> block,
+> block quote.
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>This is a block, block, block quote. </blockquote></div>"
+        )
 
     def test_heading(self):
         md = "### Heading"
@@ -48,10 +58,32 @@ the **same** even with inline stuff
         )
 
     def test_unorderedlist(self):
-        pass
+        md = """
+- One
+- Two
+- Three
+- Four
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>One</li><li>Two</li><li>Three</li><li>Four</li></ul></div>"
+        )
 
     def test_orderedlist(self):
-        pass
+        md = """
+1. One
+2. Two
+3. Three
+4. Four
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ol><li>One</li><li>Two</li><li>Three</li><li>Four</li></ol></div>"
+        )
 
 if __name__ == "__main__":
     unittest.main()

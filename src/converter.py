@@ -67,10 +67,10 @@ def unordered_list_block_to_htmlnode(md_block):
 
 def ordered_list_block_to_htmlnode(md_block):
     lines = md_block.splitlines()
-    clean_lines = []
     nodes = []
     for line in lines:
-        clean_lines.append(line.split(" ", 1))
-    for line in clean_lines:
-        nodes.append(ParentNode("li", text_to_children(line)))
+        parts = line.split(". ", 1)
+        if len(parts) > 1:
+            content = parts[1]
+            nodes.append(ParentNode("li", text_to_children(content)))
     return ParentNode("ol", nodes)
