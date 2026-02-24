@@ -1,0 +1,1 @@
+# Recursive function, first deletes contents of public/ directory, then copies the contents of the static directory to the public directory
