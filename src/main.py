@@ -1,13 +1,18 @@
 from copy_files import static_directory_copy
 from converter import generate_page_recursive
-from pathlib import Path
 import os
 import shutil
+import sys
 
 def main():
-    destination = './public/'
-    source = './static/'
+
+    destination = './docs/'
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+    else:
+        basepath = '/'
     content = './content'
+    source = './static'
     template = './template.html'
     if os.path.exists(destination):
         try:
@@ -19,9 +24,7 @@ def main():
         print(f'Directory {destination} not found.')
 
     static_directory_copy(destination, source)
-    generate_page_recursive(content, template, destination)
-    # recursively generate pages based on the files in content
-    # generate_page('./content/index.md', './template.html', './public/index.html')
+    generate_page_recursive(content, template, destination, basepath)
 
 if __name__ == "__main__":
     main()

@@ -38,7 +38,7 @@ def extract_title(md):
         raise Exception
     return parts[1]
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     if not os.path.isfile(from_path):
         raise Exception("Source path invalid, not a file.")
     if not os.path.isfile(template_path):
@@ -52,22 +52,23 @@ def generate_page(from_path, template_path, dest_path):
     
     html_content = markdown_to_html_node(content)
     title = extract_title(content)
-    page = template.replace('{{ Content }}', html_content.to_html()).replace('{{ Title }}', title)
+    page = template.replace('{{ Content }}', html_content.to_html()).replace('{{ Title }}', title).replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
+    
 
     updated_path = os.path.splitext(dest_path)[0] + '.html'
     with open(updated_path, 'w') as destination:
         
         destination.write(page)
 
-def generate_page_recursive(from_path, template_path, dest_path):
+def generate_page_recursive(from_path, template_path, dest_path, basepath):
     for item in os.listdir(from_path):
         new_from = os.path.join(from_path, item)
         new_dest = os.path.join(dest_path, item)
         if os.path.isdir(new_from):
             os.makedirs(new_dest)
-            generate_page_recursive(new_from, template_path, new_dest)
+            generate_page_recursive(new_from, template_path, new_dest, basepath)
         else:
-            generate_page(new_from, template_path, new_dest)
+            generate_page(new_from, template_path, new_dest, basepath)
 
         # if directory, create dest dir and call generate_page_recursive with new paths
         # if file call generate_page with given paths
