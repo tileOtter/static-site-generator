@@ -1,5 +1,5 @@
-from textnode import TextNode, TextType
 from copy_files import static_directory_copy
+from converter import generate_page
 import os
 import shutil
 
@@ -14,8 +14,9 @@ def main():
             print(f'Error: {e}')
     else:
         print(f'Directory {destination} not found.')
-        
+
     static_directory_copy(destination, source)
+    generate_page('./content/index.md', './template.html', './public/index.html')
 
 if __name__ == "__main__":
     main()

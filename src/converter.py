@@ -3,6 +3,7 @@ from text_to_textnodes import text_to_textnodes
 from text_to_html import text_node_to_html_node
 from htmlnode import HTMLNode, ParentNode, LeafNode
 from textnode import TextNode, TextType
+import os
 
 def markdown_to_html_node(md):
     blocks = markdown_to_blocks(md)
@@ -30,6 +31,34 @@ def text_to_children(text):
             children.append(text_node_to_html_node(textnode))
     return children
 
+def extract_title(md):
+    title = md.splitlines()[0].rstrip()
+    parts = title.split(" ", 1)
+    if parts[0] != "#":
+        raise Exception
+    return parts[1]
+
+def generate_page(from_path, template_path, dest_path):
+    if not os.path.isfile(from_path):
+        raise Exception("Source path invalid, not a file.")
+    if not os.path.isfile(template_path):
+        raise Exception("Template path invalid, not a file.")
+    if not os.path.isfile(dest_path):
+        os.mknod(dest_path)
+
+    with open(from_path, 'r') as source:
+        content = source.read()
+    
+    with open(template_path, 'r') as temp:
+        template = temp.read()
+    
+    html_content = markdown_to_html_node(content)
+    title = extract_title(content)
+    page = template.replace('{{ Content }}', html_content.to_html()).replace('{{ Title }}', title)
+
+    with open(dest_path, 'w') as destination:
+        destination.write(page)
+            
 def paragraph_block_to_htmlnode(md_block):
     clean_block = md_block.replace("\n", " ")
     return ParentNode("p", text_to_children(clean_block))
